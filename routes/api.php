@@ -17,7 +17,7 @@ use App\Http\Controllers\api\authController;
 |
 */
 
-Route::post('/auth/login', [authController::class, 'loginUser']);
+//Route::post('/auth/login', [authController::class, 'loginUser']);
 
 Route::group(['prefix' => 'auth'], function () {
         Route::post('login', [authController::class, 'loginUser']);
@@ -29,17 +29,23 @@ Route::group(['prefix' => 'auth'], function () {
         });
 });
 
-//Route::middleware('auth:sanctum')->group(function() {
+Route::middleware('auth:sanctum')->group(function() {
 
         Route::post('/tigopayment/MNOcallback', 
-        [PaymentRequestController::class, 'pesaportTigoCallBack']);
+                [PaymentRequestController::class, 'pesaportTigoCallBack']);
 
         Route::post('/tigopayment/store', 
-        [PaymentRequestController::class, 'store']);
+                [PaymentRequestController::class, 'store']);
 
-//});
+        Route::post('/tigopayment/pesaportTigoB2C', 
+                [PaymentRequestController::class, 'pesaportTigoB2C']);
 
-Route::post('/tigopayment/pesaportTigoB2C', [PaymentRequestController::class, 'pesaportTigoB2C']);
+        Route::post('/tigopayment/pesaportTigoC2B', 
+                [PaymentRequestController::class, 'pesaportTigoC2B']);
+
+});
+
+
 
 // Route::post('/tigopayment/store', [authController::class, 'store']);
 

@@ -21,7 +21,7 @@ function postToTigo_C2B( $payload ){
 
     Log::debug("Function | ".__FUNCTION__." | Received payload....  : ". json_encode($payload));
 
-    Log::debug("Function | ".__FUNCTION__." | Received payload....  : ". $dt);
+    Log::debug("Function | ".__FUNCTION__." | Received payload Date....  : ". $dt);
 
      $payload['network'] = 'tigopesa';
 
@@ -40,21 +40,16 @@ function postToTigo_C2B( $payload ){
 
 
 
-    try{
-
-
-        //Updating request table with new status
-        $EvmakTrxRequest = paymentRequest::find($payload->id);
-        $EvmakTrxRequest->status = 'Posted';
-        $EvmakTrxRequest->save();
-
-
-
         $response = Http::withHeaders([
 
             'Content-Type' => 'application/x-www-form-urlencoded'
     
-        ])->withBody(
+        ])->withOptions([
+            'verifiy_host' => false,
+            'verify_peer' => false,
+            'verify' => false
+        ])
+        ->withBody(
             http_build_query([
 
                 'username' => $api_client_id,
@@ -66,6 +61,18 @@ function postToTigo_C2B( $payload ){
 
     
         Log::debug("Function | ".__FUNCTION__." | Received payload from Tigo  : ".$response);
+
+
+
+
+
+
+    try{
+
+
+        
+
+
     
         if($response->successful()){
     
@@ -93,7 +100,7 @@ function postToTigo_C2B( $payload ){
             ));
 
 
-            //Sending push request to Iartel
+            //Sending push request to Tigo
 
             $response = Http::withHeaders([
 
@@ -116,6 +123,15 @@ function postToTigo_C2B( $payload ){
             Log::debug("Function | ".__FUNCTION__." | Received payload from Tigo  : ".$response);
 
             if($response->successful()){
+
+
+                
+                //Updating request table with new status
+                $EvmakTrxRequest = paymentRequest::find($payload->id);
+                $EvmakTrxRequest->status = 'Posted';
+                $EvmakTrxRequest->save();
+
+
 
                 Log::debug("Function | ".__FUNCTION__." | Posting of push notification has been success ". $response);
 
@@ -194,7 +210,7 @@ function postToTigo_B2C( $payload ){
                 '<AMOUNT>'.$payload->amount.'</AMOUNT>'.
                 '<MSISDN1>'.$payload->client_mobile.'</MSISDN1>'.
                 '<SENDERNAME>PESAPORT</SENDERNAME>'.
-                '<BRAND_ID>3569</BRAND_ID>'.
+                '<BRAND_ID>4613</BRAND_ID>'.
                 '<LANGUAGE1>en</LANGUAGE1>'.
                 '</COMMAND>';
 
